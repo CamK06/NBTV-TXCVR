@@ -1,0 +1,451 @@
+options:
+  parameters:
+    author: ''
+    catch_exceptions: 'True'
+    category: '[GRC Hier Blocks]'
+    cmake_opt: ''
+    comment: ''
+    copyright: ''
+    description: ''
+    gen_cmake: 'On'
+    gen_linking: dynamic
+    generate_options: qt_gui
+    hier_block_src_path: '.:'
+    id: nbtv_rx
+    max_nouts: '0'
+    output_language: python
+    placement: (0,0)
+    qt_qss_theme: ''
+    realtime_scheduling: ''
+    run: 'True'
+    run_command: '{python} -u {filename}'
+    run_options: prompt
+    sizing_mode: fixed
+    thread_safe_setters: ''
+    title: nbtv_rx
+    window_size: (1000,1000)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [8, 8]
+    rotation: 0
+    state: enabled
+
+blocks:
+- name: framerate
+  id: variable
+  parameters:
+    comment: ''
+    value: '3'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [208, 16.0]
+    rotation: 0
+    state: true
+- name: line_pixels
+  id: variable
+  parameters:
+    comment: ''
+    value: '48'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [368, 16.0]
+    rotation: 0
+    state: true
+- name: lines
+  id: variable
+  parameters:
+    comment: ''
+    value: '32'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [296, 16.0]
+    rotation: 0
+    state: true
+- name: samp_rate
+  id: variable
+  parameters:
+    comment: ''
+    value: '48000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [544, 16.0]
+    rotation: 0
+    state: enabled
+- name: scan_rate
+  id: variable
+  parameters:
+    comment: ''
+    value: (lines*line_pixels)*framerate
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [456, 16.0]
+    rotation: 0
+    state: enabled
+- name: sync_threshold
+  id: variable_qtgui_range
+  parameters:
+    comment: ''
+    gui_hint: ''
+    label: Horizontal Sync Threshold
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '-1'
+    step: '0.025'
+    stop: '1'
+    value: '-0.75'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [632, 16.0]
+    rotation: 0
+    state: true
+- name: vert_sync
+  id: variable_qtgui_range
+  parameters:
+    comment: ''
+    gui_hint: ''
+    label: Vertical Sync
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '0'
+    step: '1'
+    stop: lines
+    value: '0'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [792, 16.0]
+    rotation: 0
+    state: true
+- name: analog_const_source_x_0
+  id: analog_const_source_x
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    const: sync_threshold
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: float
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1256, 472.0]
+    rotation: 0
+    state: true
+- name: audio_source_0
+  id: audio_source
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    device_name: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_outputs: '1'
+    ok_to_block: 'True'
+    samp_rate: samp_rate
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [952, 472.0]
+    rotation: 0
+    state: true
+- name: blocks_threshold_ff_0
+  id: blocks_threshold_ff
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    high: sync_threshold
+    init: '0'
+    low: sync_threshold
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1272, 384.0]
+    rotation: 0
+    state: enabled
+- name: blocks_throttle2_0_0
+  id: blocks_throttle2
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    ignoretag: 'True'
+    limit: auto
+    maximum: '0.1'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samples_per_second: samp_rate
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1272, 552.0]
+    rotation: 0
+    state: enabled
+- name: blocks_wavfile_source_0
+  id: blocks_wavfile_source
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    file: /home/cam/Desktop/GNU Radio/Narrowband TV/out.wav
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    nchan: '1'
+    repeat: 'True'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [960, 528.0]
+    rotation: 0
+    state: disabled
+- name: epy_block_0
+  id: epy_block
+  parameters:
+    _source_code: "\"\"\"\nEmbedded Python Blocks:\n\nEach time this file is saved,\
+      \ GRC will instantiate the first class it finds\nto get ports and parameters\
+      \ of your block. The arguments to __init__  will\nbe the parameters. All of\
+      \ them are required to have default values!\n\"\"\"\n\nimport numpy as np\n\
+      from gnuradio import gr\nimport pygame\n\nclass blk(gr.sync_block):  # other\
+      \ base classes are basic_block, decim_block, interp_block\n    \"\"\"Embedded\
+      \ Python Block example - a simple multiply const\"\"\"\n\n    def __init__(self,\
+      \ lines=32, line_size=48, framerate=12.5, sync_level=0.05):  # only default\
+      \ arguments here\n        \"\"\"arguments to this function show up as parameters\
+      \ in GRC\"\"\"\n        gr.sync_block.__init__(\n            self,\n       \
+      \     name='NBTV Receive',   # will show up in GRC\n            in_sig=[np.float32],\n\
+      \            out_sig=[]\n        )\n        # if an attribute with the same\
+      \ name as a parameter is found,\n        # a callback is registered (properties\
+      \ work, too).\n        self.lines = line_size\n        self.line_size = lines\n\
+      \        self.framerate = framerate\n        self.sync_level = sync_level\n\n\
+      \        # Scanning beam\n        self.lineCounter = 0\n        self.pixelCounter\
+      \ = 0\n        self.txCounterOffset = 0\n        self.frameBuf = np.zeros((self.lines*self.line_size),\
+      \ dtype=np.uint8)\n        self.synced = False\n\n        self.started = False\n\
+      \n    def work(self, input_items, output_items):\n        \"\"\"example: multiply\
+      \ with constant\"\"\"\n        \n        # Initialize display\n        if(self.started\
+      \ == False):\n            pygame.init()\n            self.screen = pygame.display.set_mode((self.line_size*8,\
+      \ self.lines*8))\n            self.started = True\n\n        input_items_orig\
+      \ = np.copy(input_items)\n        np.rint(input_items[0]*340, out=input_items[0])\n\
+      \        for i in range(0, len(input_items[0])):\n            #self.frameBuf[(self.lineCounter*self.line_size)+self.pixelCounter]\
+      \ = input_items[0][i]\n            if(input_items_orig[0][i] <= self.sync_level):\n\
+      \                self.pixelCounter = 0\n                self.lineCounter +=\
+      \ 1\n                if(self.lineCounter >= self.lines):\n                 \
+      \   self.lineCounter = 0\n                    pygame.display.flip()\n      \
+      \          continue\n            \n            #  Draw the current pixel\n \
+      \           for event in pygame.event.get():\n                if event.type\
+      \ == pygame.QUIT:\n                    running = False\n            brightness\
+      \ = int(input_items[0][i])\n            if brightness < 0:\n               \
+      \ brightness = 0\n            if brightness > 255:\n                brightness\
+      \ = 255\n            pygame.draw.rect(self.screen, (brightness, brightness,\
+      \ brightness), (self.pixelCounter*8, self.lineCounter*8, 8, 8))\n          \
+      \  #pygame.display.flip()\n\n            # Move the beam along\n           \
+      \ self.pixelCounter += 1\n            if(self.pixelCounter >= self.line_size):\n\
+      \                self.pixelCounter = 0\n                self.lineCounter +=\
+      \ 1\n                if(self.lineCounter >= self.lines):\n                 \
+      \   self.lineCounter = 0\n                    pygame.display.flip()\n\n    \
+      \    return len(input_items[0])\n"
+    affinity: ''
+    alias: ''
+    comment: ''
+    framerate: framerate
+    line_size: line_pixels
+    lines: lines
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    sync_level: sync_threshold
+  states:
+    _io_cache: ('NBTV Receive', 'blk', [('lines', '32'), ('line_size', '48'), ('framerate',
+      '12.5'), ('sync_level', '0.05')], [('0', 'float', 1)], [], 'Embedded Python
+      Block example - a simple multiply const', ['framerate', 'line_size', 'lines',
+      'sync_level'])
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1704, 512.0]
+    rotation: 0
+    state: enabled
+- name: network_tcp_source_0
+  id: network_tcp_source
+  parameters:
+    addr: 127.0.0.1
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    port: '2001'
+    server: 'True'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [968, 384.0]
+    rotation: 0
+    state: disabled
+- name: pfb_arb_resampler_xxx_1
+  id: pfb_arb_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    atten: '100'
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    nfilts: '32'
+    rrate: scan_rate/samp_rate
+    samp_delay: '0'
+    taps: ''
+    type: fff
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1456, 512.0]
+    rotation: 0
+    state: enabled
+- name: qtgui_time_sink_x_0
+  id: qtgui_time_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'False'
+    axislabels: 'True'
+    color1: blue
+    color10: dark blue
+    color2: red
+    color3: green
+    color4: black
+    color5: cyan
+    color6: magenta
+    color7: yellow
+    color8: dark red
+    color9: dark green
+    comment: ''
+    ctrlpanel: 'False'
+    entags: 'True'
+    grid: 'False'
+    gui_hint: ''
+    label1: Sync Pulses
+    label10: Signal 10
+    label2: Baseband Video
+    label3: Sync Threshold
+    label4: Signal 4
+    label5: Signal 5
+    label6: Signal 6
+    label7: Signal 7
+    label8: Signal 8
+    label9: Signal 9
+    legend: 'True'
+    marker1: '-1'
+    marker10: '-1'
+    marker2: '-1'
+    marker3: '-1'
+    marker4: '-1'
+    marker5: '-1'
+    marker6: '-1'
+    marker7: '-1'
+    marker8: '-1'
+    marker9: '-1'
+    name: '""'
+    nconnections: '3'
+    size: '24000'
+    srate: samp_rate
+    stemplot: 'False'
+    style1: '1'
+    style10: '1'
+    style2: '1'
+    style3: '1'
+    style4: '1'
+    style5: '1'
+    style6: '1'
+    style7: '1'
+    style8: '1'
+    style9: '1'
+    tr_chan: '0'
+    tr_delay: '0'
+    tr_level: '0.0'
+    tr_mode: qtgui.TRIG_MODE_FREE
+    tr_slope: qtgui.TRIG_SLOPE_POS
+    tr_tag: '""'
+    type: float
+    update_time: '1'
+    width1: '1'
+    width10: '1'
+    width2: '1'
+    width3: '1'
+    width4: '1'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    ylabel: Amplitude
+    ymax: '1'
+    ymin: '-1'
+    yunit: '""'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1456, 408.0]
+    rotation: 0
+    state: enabled
+
+connections:
+- [analog_const_source_x_0, '0', qtgui_time_sink_x_0, '2']
+- [audio_source_0, '0', blocks_threshold_ff_0, '0']
+- [audio_source_0, '0', blocks_throttle2_0_0, '0']
+- [audio_source_0, '0', qtgui_time_sink_x_0, '1']
+- [blocks_threshold_ff_0, '0', qtgui_time_sink_x_0, '0']
+- [blocks_throttle2_0_0, '0', pfb_arb_resampler_xxx_1, '0']
+- [blocks_wavfile_source_0, '0', blocks_threshold_ff_0, '0']
+- [blocks_wavfile_source_0, '0', blocks_throttle2_0_0, '0']
+- [blocks_wavfile_source_0, '0', qtgui_time_sink_x_0, '1']
+- [network_tcp_source_0, '0', blocks_threshold_ff_0, '0']
+- [network_tcp_source_0, '0', blocks_throttle2_0_0, '0']
+- [network_tcp_source_0, '0', qtgui_time_sink_x_0, '1']
+- [pfb_arb_resampler_xxx_1, '0', epy_block_0, '0']
+
+metadata:
+  file_format: 1
+  grc_version: 3.10.7.0
