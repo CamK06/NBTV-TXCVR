@@ -1,0 +1,52 @@
+Date : 2023-10-13 13:21:58
+Directory : /home/cam/Dev/C++/NBTV-TXCVR
+Total : 19 files,  1194 codes, 24 comments, 126 blanks, all 1344 lines
+
+Languages
++----------+------------+------------+------------+------------+------------+
+| language | files      | code       | comment    | blank      | total      |
++----------+------------+------------+------------+------------+------------+
+| XML      |          4 |        630 |          0 |          4 |        634 |
+| CMake    |          4 |        343 |          0 |         66 |        409 |
+| C++      |         10 |        168 |          6 |         44 |        218 |
+| Python   |          1 |         53 |         18 |         12 |         83 |
++----------+------------+------------+------------+------------+------------+
+
+Directories
++--------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                         | files      | code       | comment    | blank      | total      |
++--------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                            |         19 |      1,194 |         24 |        126 |      1,344 |
+| cmake                                                        |          4 |        343 |          0 |         66 |        409 |
+| gnuradio                                                     |          1 |         53 |         18 |         12 |         83 |
+| src                                                          |         14 |        798 |          6 |         48 |        852 |
+| src (Files)                                                  |          4 |        372 |          6 |         16 |        394 |
+| src/dialogs                                                  |          9 |        412 |          0 |         30 |        442 |
+| src/util                                                     |          1 |         14 |          0 |          2 |         16 |
++--------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++--------------------------------------------------------------+----------+------------+------------+------------+------------+
+| filename                                                     | language | code       | comment    | blank      | total      |
++--------------------------------------------------------------+----------+------------+------------+------------+------------+
+| /home/cam/Dev/C++/NBTV-TXCVR/cmake/FindFLAC.cmake            | CMake    |         58 |          0 |         10 |         68 |
+| /home/cam/Dev/C++/NBTV-TXCVR/cmake/FindOgg.cmake             | CMake    |         54 |          0 |          8 |         62 |
+| /home/cam/Dev/C++/NBTV-TXCVR/cmake/FindOpus.cmake            | CMake    |         56 |          0 |         12 |         68 |
+| /home/cam/Dev/C++/NBTV-TXCVR/cmake/FindVorbis.cmake          | CMake    |        175 |          0 |         36 |        211 |
+| /home/cam/Dev/C++/NBTV-TXCVR/gnuradio/nbtv_rx_epy_block_0.py | Python   |         53 |         18 |         12 |         83 |
+| /home/cam/Dev/C++/NBTV-TXCVR/src/dialogs/audiodialog.cpp     | C++      |         15 |          0 |          2 |         17 |
+| /home/cam/Dev/C++/NBTV-TXCVR/src/dialogs/audiodialog.h       | C++      |         15 |          0 |          7 |         22 |
+| /home/cam/Dev/C++/NBTV-TXCVR/src/dialogs/audiodialog.ui      | XML      |        111 |          0 |          1 |        112 |
+| /home/cam/Dev/C++/NBTV-TXCVR/src/dialogs/radiodialog.cpp     | C++      |         15 |          0 |          2 |         17 |
+| /home/cam/Dev/C++/NBTV-TXCVR/src/dialogs/radiodialog.h       | C++      |         15 |          0 |          7 |         22 |
+| /home/cam/Dev/C++/NBTV-TXCVR/src/dialogs/radiodialog.ui      | XML      |        117 |          0 |          1 |        118 |
+| /home/cam/Dev/C++/NBTV-TXCVR/src/dialogs/videodialog.cpp     | C++      |         15 |          0 |          2 |         17 |
+| /home/cam/Dev/C++/NBTV-TXCVR/src/dialogs/videodialog.h       | C++      |         15 |          0 |          7 |         22 |
+| /home/cam/Dev/C++/NBTV-TXCVR/src/dialogs/videodialog.ui      | XML      |         94 |          0 |          1 |         95 |
+| /home/cam/Dev/C++/NBTV-TXCVR/src/main.cpp                    | C++      |          9 |          0 |          1 |         10 |
+| /home/cam/Dev/C++/NBTV-TXCVR/src/mainwindow.cpp              | C++      |         29 |          6 |          8 |         43 |
+| /home/cam/Dev/C++/NBTV-TXCVR/src/mainwindow.h                | C++      |         26 |          0 |          6 |         32 |
+| /home/cam/Dev/C++/NBTV-TXCVR/src/mainwindow.ui               | XML      |        308 |          0 |          1 |        309 |
+| /home/cam/Dev/C++/NBTV-TXCVR/src/util/log.h                  | C++      |         14 |          0 |          2 |         16 |
+| Total                                                        |          |      1,194 |         24 |        126 |      1,344 |
++--------------------------------------------------------------+----------+------------+------------+------------+------------+
