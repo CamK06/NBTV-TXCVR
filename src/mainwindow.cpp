@@ -7,9 +7,10 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
+    , audioDialog(new AudioDialog(this))
 {
+    audioDialog->close();
     ui->setupUi(this);
-    setWindowTitle("NBTV Transceiver by VE3KCN");
 
     // Disable the sync button, as it is actually just a redneck display, not input
     ui->syncButton->setDisabled(true);
@@ -24,8 +25,11 @@ MainWindow::MainWindow(QWidget *parent)
 
     // Signal handling
     connect(ui->fileQuit, &QAction::triggered, this, &MainWindow::exit);
+    connect(ui->setupAudio, &QAction::triggered, this, &MainWindow::showAudioDialog);
 
     Log::info("Initialized main window");
 }
+
+void MainWindow::showAudioDialog() { audioDialog->exec(); }
 
 void MainWindow::exit() { std::exit(0); }

@@ -1,6 +1,8 @@
 #pragma once
 
 #include <QMainWindow>
+#include "audiodialog.h"
+#include "./ui_audiodialog.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -15,6 +17,8 @@ public:
 
 private:
     void exit();
+    void showAudioDialog();
 
+    AudioDialog *audioDialog;
     Ui::MainWindow *ui;
 };
