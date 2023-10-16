@@ -1,5 +1,6 @@
 #include <QMainWindow>
 #include <QMessageBox>
+#include <sndio.h>
 
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
