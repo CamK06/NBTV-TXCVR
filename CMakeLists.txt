@@ -24,4 +24,4 @@ include_directories(src)
 file(GLOB SOURCES "src/*.cpp" "src/**/*.cpp")
 
 add_executable(nbtv ${SOURCES})
-target_link_libraries(nbtv PRIVATE SndFile::sndfile Qt5::Widgets stdc++fs)
+target_link_libraries(nbtv PRIVATE SndFile::sndfile Qt5::Widgets stdc++fs portaudio)

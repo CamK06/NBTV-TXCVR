@@ -15,8 +15,14 @@ class AudioDialog : public QDialog
 
 public:
     AudioDialog(QWidget *parent = nullptr);
+    int getInputDeviceIndex();
+    int getOutputDeviceIndex();
     Ui::AudioDialog *ui;
 
 private:
-    
+    void Ok();
+    void Cancel();
+
+    int inputDevice = 0;
+    int outputDevice = 0;
 };
