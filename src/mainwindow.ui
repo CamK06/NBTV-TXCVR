@@ -164,10 +164,17 @@
          <property name="flat">
           <bool>true</bool>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayout_3">
+         <layout class="QHBoxLayout" name="horizontalLayout_2">
           <property name="bottomMargin">
            <number>1</number>
           </property>
+          <item>
+           <widget class="QPushButton" name="rxStartButton">
+            <property name="text">
+             <string>Start</string>
+            </property>
+           </widget>
+          </item>
           <item>
            <widget class="QPushButton" name="syncButton">
             <property name="palette">
@@ -274,6 +281,7 @@
    <addaction name="menuSetup"/>
    <addaction name="menuHelp"/>
   </widget>
+  <widget class="QStatusBar" name="statusBar"/>
   <action name="fileQuit">
    <property name="text">
     <string>Quit</string>
