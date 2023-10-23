@@ -7,9 +7,13 @@
 #include "./ui_audiodialog.h"
 #include "./ui_videodialog.h"
 #include "./ui_radiodialog.h"
-#include "modes.h"
+#include "nbtv/transmit.h"
+#include "nbtv/receive.h"
 
 #include <thread>
+#include <portaudio.h>
+
+#define FRAMES_PER_BUF 256
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -39,13 +43,27 @@ private:
     void showAboutDialog();
     void updateStatusBar();
 
-    bool workerRunning = false;
-    State state = IDLE;
-    Mode mode = Mode::KCN;
+    // UI Stuff
     AudioDialog *audioDialog;
     VideoDialog *videoDialog;
     RadioDialog *radioDialog;
     Ui::MainWindow *ui;
-    std::thread worker;
     QLabel statusBarLabel;
+    
+    // TV Functionality
+    NBTVTransmit transmitter;
+    NBTVReceive receiver;
+    State state = IDLE;
+    nbtvParam mode = nbtvModes[Mode::KCN];
+    std::thread worker;
+    bool workerRunning = false;
+
+    // Audio stuff
+    PaStreamParameters outputParameters;
+    PaStreamParameters inputParameters;
+    PaDeviceInfo *inputDeviceInfo;
+    PaDeviceInfo *outputDeviceInfo;
+    PaStream *stream = nullptr;
+    PaError err;
+    int sampleRate = 48000;
 };
