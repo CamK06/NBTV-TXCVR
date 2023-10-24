@@ -56,8 +56,14 @@ AudioDialog::AudioDialog(QWidget *parent)
     connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &AudioDialog::Cancel);
 }
 
+// TODO: FIX: Doesn't work with some audio APIs?
 void AudioDialog::reloadStream()
 {
+    if(Pa_IsStreamActive(stream)) {
+        Pa_StopStream(stream);
+        Pa_CloseStream(stream);
+    }
+
     // Set up the input and output streams
     outputParameters.device = outputDevice;
     outputParameters.channelCount = 1;
@@ -75,6 +81,7 @@ void AudioDialog::reloadStream()
     PaError err = Pa_OpenStream(&stream, &inputParameters, &outputParameters, sampleRate, FRAMES_PER_BUF, paClipOff, nullptr, nullptr);
     if(err != paNoError) {
         Log::error("Failed to open audio stream");
+        std::cout << Pa_GetErrorText(err) << std::endl;
         return;
     }
 }
@@ -82,6 +89,7 @@ void AudioDialog::reloadStream()
 void AudioDialog::Ok() {
     inputDevice = ui->inputDevice->currentIndex()+1;
     outputDevice = ui->outputDevice->currentIndex()+1;
+    reloadStream();
 }
 
 void AudioDialog::Cancel() {
