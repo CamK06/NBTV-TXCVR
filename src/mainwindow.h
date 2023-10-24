@@ -59,11 +59,6 @@ private:
     bool workerRunning = false;
 
     // Audio stuff
-    PaStreamParameters outputParameters;
-    PaStreamParameters inputParameters;
-    PaDeviceInfo *inputDeviceInfo;
-    PaDeviceInfo *outputDeviceInfo;
-    PaStream *stream = nullptr;
     PaError err;
     int sampleRate = 48000;
 };

@@ -17,5 +17,5 @@ private:
     //int imgIndex = 0;
     int imageSize = 0;
     nbtvParam mode;
-
+    bool running = false;
 };

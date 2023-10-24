@@ -75,14 +75,13 @@ void MainWindow::mainWorker()
         switch (state)
         {
         case State::TX:
+            // TODO: Add webcam or otherwise video input here (fetching new frame into frame buffer)
+
             // Generate output samples and write them to the audio stream
             transmitter.step(frameBuf, numSamps, samps);
-
-            //for(int i = 0; i < numSamps/FRAMES_PER_BUF; i++) {
-                err = Pa_WriteStream(stream, samps, numSamps);
-                if(err)
-                    Log::error("Failed to write samples to output stream!");
-            //}
+            err = Pa_WriteStream(audioDialog->stream, samps, numSamps);
+            if(err)
+                Log::error("Failed to write samples to output stream!");
             break;
         
         case State::RX:
@@ -107,26 +106,14 @@ void MainWindow::toggleTx()
         ui->txButton->setText("Stop");
         ui->txButton->setStyleSheet("background-color: red");
         ui->rxStartButton->setDisabled(true);
-        ui->rxStartButton->setText("Start");
-        ui->rxStartButton->setStyleSheet("");
+        if(state == State::RX)
+            toggleRx();
 
-        // Set up the audio stream
-        outputParameters.device = audioDialog->getOutputDeviceIndex();
-        outputParameters.channelCount = 1;
-        outputParameters.sampleFormat = paInt16;
-        outputParameters.suggestedLatency = Pa_GetDeviceInfo(outputParameters.device)->defaultLowOutputLatency;
-        outputParameters.hostApiSpecificStreamInfo = nullptr;
-
-        // Open the audio stream
-        sampleRate = Pa_GetDeviceInfo(outputParameters.device)->defaultSampleRate;
-        err = Pa_OpenStream(&stream, nullptr, &outputParameters, sampleRate, FRAMES_PER_BUF, paClipOff, nullptr, nullptr);
+        // Start the audio stream
+        if(!Pa_IsStreamActive(audioDialog->stream))
+            err = Pa_StartStream(audioDialog->stream);
         if(err != paNoError) {
             Log::error("Failed to open audio stream");
-            return;
-        }
-        err = Pa_StartStream(stream);
-        if(err != paNoError) {
-            Log::error("Failed to start audio stream");
             return;
         }
 
@@ -135,14 +122,12 @@ void MainWindow::toggleTx()
         state = State::TX;
     }
     else { // We autostart RX when TX ends, as you likely want it if you're TXing
+        state = State::IDLE;
         ui->txButton->setText("Start");
         ui->txButton->setStyleSheet("");
         ui->rxStartButton->setDisabled(false);
-        ui->rxStartButton->setText("Stop");
-        ui->rxStartButton->setStyleSheet("background-color: red");
         transmitter.stop();
-        // TODO: receiver.start();
-        state = State::RX;
+        toggleRx();
     }
     updateStatusBar();
 }
@@ -156,19 +141,25 @@ void MainWindow::toggleRx()
 
     // Toggle the receiver
     if(state != State::RX) {
-        state = State::RX;
         ui->rxStartButton->setText("Stop");
         ui->rxStartButton->setStyleSheet("background-color: red");
+
+        // Start the audio stream
+        if(!Pa_IsStreamActive(audioDialog->stream))
+            err = Pa_StartStream(audioDialog->stream);
+        if(err != paNoError) {
+            Log::error("Failed to open audio stream");
+            return;
+        }
+
+        mode.sampsPerPixel = sampleRate/(mode.lines*mode.pixels*mode.framerate);
+        receiver.start(mode);
+        state = State::RX;
     }
     else {
         state = State::IDLE;
         ui->rxStartButton->setText("Start");
         ui->rxStartButton->setStyleSheet("");
-
-        // If we aren't transmitting and aren't receiving, we may as well kill the worker
-        workerRunning = false;
-        while(!worker.joinable());
-        worker.join();
     }
     updateStatusBar();
 }

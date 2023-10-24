@@ -5,7 +5,7 @@ void NBTVTransmit::start(nbtvParam params)
 {
     mode = params;
     imageSize = params.lines*params.pixels;
-
+    running = true;
     // Reset the scanning beam
     //line = 0;
     //pixel = 0;
@@ -14,6 +14,9 @@ void NBTVTransmit::start(nbtvParam params)
 
 void NBTVTransmit::step(uint8_t* frame, int numSamps, int16_t* outSamps)
 {
+    if(!running)
+        return;
+
     // Generate one frame of samples
     int pixel = 0;
     int imgIndex = 0;
@@ -22,12 +25,12 @@ void NBTVTransmit::step(uint8_t* frame, int numSamps, int16_t* outSamps)
         outSamps[i] = INT16_MAX-(frame[imgIndex]*((INT16_MAX)/384));
 
         if(pixel == mode.pixels-1) { // End of line
-            outSamps[i-1] = ((1*INT16_MAX));
-            outSamps[i] = (1*INT16_MAX);
+            outSamps[i-1] = INT16_MAX;
+            outSamps[i] = INT16_MAX;
         }
 
         // Increment pixels
-        if(samps == mode.sampsPerPixel) {
+        if(samps >= mode.sampsPerPixel) {
             samps = 0;
             imgIndex++;
             pixel++;
@@ -45,5 +48,5 @@ void NBTVTransmit::step(uint8_t* frame, int numSamps, int16_t* outSamps)
 
 void NBTVTransmit::stop() 
 {
-
+    running = false;
 }
