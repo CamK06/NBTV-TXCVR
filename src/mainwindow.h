@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QMainWindow>
+#include <QImage>
 #include "dialogs/audiodialog.h"
 #include "dialogs/videodialog.h"
 #include "dialogs/radiodialog.h"
@@ -49,7 +50,11 @@ private:
     RadioDialog *radioDialog;
     Ui::MainWindow *ui;
     QLabel statusBarLabel;
-    
+    QImage rxImage;
+    QImage txImage;
+    QPixmap rxPixmap;
+    QPixmap txPixmap;
+
     // TV Functionality
     NBTVTransmit transmitter;
     NBTVReceive receiver;
@@ -57,6 +62,8 @@ private:
     nbtvParam mode = nbtvModes[Mode::KCN];
     std::thread worker;
     bool workerRunning = false;
+    uint8_t* txFrameBuf = nullptr;
+    uint8_t* rxFrameBuf = nullptr;
 
     // Audio stuff
     PaError err;

@@ -53,11 +53,17 @@ MainWindow::MainWindow(QWidget *parent)
 
 void MainWindow::mainWorker()
 {
+    // Most of this setup outside of the main loop is temporary garbage
+    // CLEAN IT UP, CAM.
     Log::info("Starting main worker thread");
     int numSamps = mode.lines*mode.pixels*(sampleRate/(mode.lines*mode.pixels*mode.framerate));
-    uint8_t* frameBuf = new uint8_t[mode.lines*mode.pixels];
+    rxFrameBuf = new uint8_t[mode.lines*mode.pixels];
     int16_t* samps = new int16_t[numSamps]; // One frame
-    
+    txImage = QImage(txFrameBuf, mode.pixels, mode.lines, QImage::Format_Grayscale8);
+    rxImage = QImage(rxFrameBuf, mode.pixels, mode.lines, QImage::Format_Grayscale8);
+    rxPixmap = QPixmap::fromImage(rxImage);
+    txPixmap = QPixmap::fromImage(txImage);
+
     int image_size = std::filesystem::file_size("aaa.bin");
     std::ifstream imageFile;
     imageFile.open("aaa.bin");
@@ -65,27 +71,60 @@ void MainWindow::mainWorker()
         std::cout << "Error: invalid file" << std::endl;
         return;
     }
-    imageFile.read((char*)frameBuf, image_size);   
+    txFrameBuf = new uint8_t[image_size];
+    imageFile.read((char*)txFrameBuf, image_size);   
     imageFile.close();
-
-    //for(int i = 0; i < mode.lines*mode.pixels; i++)
-    //    frameBuf[i] = 128;
+    int txBufPtr = 0;
 
     while(workerRunning) {
         switch (state)
         {
         case State::TX:
-            // TODO: Add webcam or otherwise video input here (fetching new frame into frame buffer)
+            // Shift the image buffer down one frame
+            txBufPtr += mode.lines*mode.pixels;
+            if(txBufPtr >= image_size)
+                txBufPtr = 0;
+
+            // TODO: Add webcam or otherwise video input here
+            // Input will clear the frame buffer (remove old frame and RX image)
+            txImage = QImage(txFrameBuf+txBufPtr, mode.pixels, mode.lines, QImage::Format_Grayscale8);
+            txPixmap.convertFromImage(txImage);
+            QMetaObject::invokeMethod(ui->txGfx, "setPixmap", Qt::QueuedConnection, Q_ARG(QPixmap, txPixmap));
 
             // Generate output samples and write them to the audio stream
-            transmitter.step(frameBuf, numSamps, samps);
+            transmitter.step(txFrameBuf+txBufPtr, numSamps, samps);
             err = Pa_WriteStream(audioDialog->stream, samps, numSamps);
             if(err)
                 Log::error("Failed to write samples to output stream!");
             break;
         
         case State::RX:
+            
+            // Read input samples and process them to video
+            for(int i = 0; i < numSamps; i++)
+                samps[i] = 0;
+            err = Pa_ReadStream(audioDialog->stream, samps, FRAMES_PER_BUF);
+            if(err)
+                Log::error("Failed to read samples from input stream!");
+            receiver.step(samps, FRAMES_PER_BUF, rxFrameBuf);
 
+            // Update the GUI
+            if(receiver.displayUpdate()) {
+                rxImage = QImage(rxFrameBuf, mode.pixels, mode.lines, QImage::Format_Grayscale8);
+                rxPixmap.convertFromImage(rxImage);
+                QMetaObject::invokeMethod(ui->rxGfx, "setPixmap", Qt::QueuedConnection, Q_ARG(QPixmap, rxPixmap));
+                receiver.resetUpdated();
+
+                // Sync 'button'
+                if(receiver.isSynced()) {
+                    ui->syncButton->setText("SYNCED");
+                    QMetaObject::invokeMethod(ui->syncButton, "setStyleSheet", Qt::QueuedConnection, Q_ARG(QString, "background-color: green"));
+                }
+                else {
+                    ui->syncButton->setText("NO SYNC");
+                    QMetaObject::invokeMethod(ui->syncButton, "setStyleSheet", Qt::QueuedConnection, Q_ARG(QString, "background-color: red"));
+                }
+            }
             break;
 
         default:
@@ -160,6 +199,9 @@ void MainWindow::toggleRx()
         state = State::IDLE;
         ui->rxStartButton->setText("Start");
         ui->rxStartButton->setStyleSheet("");
+        ui->syncButton->setText("NO SYNC");
+        ui->syncButton->setStyleSheet("background-color: red");
+        receiver.stop();
     }
     updateStatusBar();
 }

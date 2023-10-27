@@ -6,10 +6,6 @@ void NBTVTransmit::start(nbtvParam params)
     mode = params;
     imageSize = params.lines*params.pixels;
     running = true;
-    // Reset the scanning beam
-    //line = 0;
-    //pixel = 0;
-    //imgIndex = 0;
 }
 
 void NBTVTransmit::step(uint8_t* frame, int numSamps, int16_t* outSamps)

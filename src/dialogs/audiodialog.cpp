@@ -33,6 +33,8 @@ AudioDialog::AudioDialog(QWidget *parent)
     }
 
     // Populate the input and output device dropdowns
+    // ui->inputDevice->addItem("Audio File");
+    // ui->outputDevice->addItem("Audio File");
     for(int i = 0; i < numDevices; i++) {
         const PaDeviceInfo *deviceInfo = Pa_GetDeviceInfo(i);
         if(deviceInfo->maxInputChannels > 0) {
