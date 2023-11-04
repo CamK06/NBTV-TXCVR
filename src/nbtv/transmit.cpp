@@ -24,12 +24,17 @@ void NBTVTransmit::step(uint8_t* frame, int numSamps, int16_t* outSamps)
     int imgIndex = 0;
     int samps = 0;
     for(int i = 0; i < numSamps; i++) {
-        xSamps[i][0] = INT16_MAX-(frame[imgIndex]*(INT16_MAX/255));
+        float pixVal = 0;
+
+
+        xSamps[i][0] = INT16_MAX-((frame[imgIndex]*((INT16_MAX-8192)/255))+16384);
         xSamps[i][1] = 0;
-        if(pixel == mode.pixels-1) { // End of line
-            xSamps[i-1][0] = INT16_MAX;
-            xSamps[i-1][1] = 0;
-            xSamps[i][0] = INT16_MAX;
+        if(pixel == mode.pixels-1 || pixel == 0) { // End of line
+            if(i-1 >= 0) { 
+                xSamps[i-1][0] = INT16_MAX/2;
+                xSamps[i-1][1] = 0;
+            }
+            xSamps[i][0] = INT16_MAX/2;
             xSamps[i][1] = 0;
         }
 
@@ -51,7 +56,7 @@ void NBTVTransmit::step(uint8_t* frame, int numSamps, int16_t* outSamps)
 
     // Shift everything up 400Hz
     dsp::hilbert(xSamps, numSamps);
-    int max = 0;
+    int max = 1;
     for(int i = 0; i < numSamps; i++) {
         xSamps[i][0] = (xSamps[i][0] * cos(phase/((sampRate/400)/(M_PI*2)))) - (xSamps[i][1] * sin(phase/((sampRate/400)/(M_PI*2))));
         if(xSamps[i][0] > max) max = xSamps[i][0];
@@ -60,8 +65,8 @@ void NBTVTransmit::step(uint8_t* frame, int numSamps, int16_t* outSamps)
 
     // Peak the audio level
     for(int i = 0; i < numSamps; i++) {
-        xSamps[i][0] *= (INT16_MAX/max);
         outSamps[i] = xSamps[i][0];
+        outSamps[i] *= (INT16_MAX/max);
     }
 
     fftw_free(xSamps); // This will definitely cause issues (or not??)

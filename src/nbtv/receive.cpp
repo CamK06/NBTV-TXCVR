@@ -31,23 +31,9 @@ void NBTVReceive::step(int16_t* samps, int numSamps, uint8_t* outFrame)
     int max = 0;
     for(int i = 0; i < numSamps; i++) {
         samps[i] = (xSamps[i][0] * cos(phase/((sampRate/400)/(M_PI*2)))) + ((xSamps[i][1]) * sin(phase/((sampRate/400)/(M_PI*2))));
-        if(samps[i] < agcMax) agcMax = samps[i];
+        if(samps[i] > agcMax) agcMax = samps[i];
         phase++;
     }
-
-    // Detect beat frequencies to determine phase error
-    int beatFreq = 0;
-    int beatCount = 0;
-    for(int i = 0; i < numSamps; i++) {
-        if(samps[i] > 0 && samps[i] < INT16_MAX/2) {
-            beatFreq += samps[i];
-            beatCount++;
-        }
-    }
-    if(beatCount > 0)
-        beatFreq /= beatCount;
-    phase += beatFreq;
-
 
     // Calculate average signal level for AGC
     //float newAvg = 0;
@@ -68,11 +54,11 @@ void NBTVReceive::step(int16_t* samps, int numSamps, uint8_t* outFrame)
         
         // Synchronization
         if(i > 0) {
-            if(samps[i] >= (INT16_MAX)-8192) {
+            if(abs(samps[i]) >= (INT16_MAX-8192)) {
                 onSyncPulse = true;
                 syncCount++;
             }
-            else if(onSyncPulse && samps[i] < (INT16_MAX)-8192) {
+            else if(onSyncPulse && abs(samps[i]) < (INT16_MAX-8192)) {
                 onSyncPulse = false;
                 if(syncCount == 2) {
                     noSyncCount = 0;
@@ -93,21 +79,22 @@ void NBTVReceive::step(int16_t* samps, int numSamps, uint8_t* outFrame)
                 noSyncCount++;
                 if(noSyncCount >= mode.sampsPerPixel*mode.lines*mode.pixels) {
                     noSyncCount = 0;
+                    syncCount = 0;
                     synced = false;
                 }
             }
         }
 
         // Too lazy to do this another way
-        if(samps[i] >= 0)
-            pixVal += samps[i];
-        else
-            pixVal -= samps[i];
+        //if(samps[i] >= 0)
+        pixVal += abs(samps[i]-16384);
+        //else
+        //    pixVal -= samps[i];
 
         if(ssamps >= mode.sampsPerPixel) {
             // Write the pixel to the frame
             pixVal /= mode.sampsPerPixel;
-            pixVal = 255-((pixVal/INT16_MAX)*255);
+            pixVal = ((pixVal/INT16_MAX)*255);
             outFrame[imgIndex] = pixVal;
 
             // Advance the beam
