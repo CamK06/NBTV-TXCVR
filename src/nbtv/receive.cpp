@@ -35,19 +35,6 @@ void NBTVReceive::step(int16_t* samps, int numSamps, uint8_t* outFrame)
         phase++;
     }
 
-    // Calculate average signal level for AGC
-    //float newAvg = 0;
-    //for(int i = 0; i < numSamps; i++)
-    //    newAvg += samps[i];
-    //newAvg /= numSamps;
-    //agcAvg += max;
-    //agcAvg /= 2;
-    //agcAvg = max;
-    //if(agc < 0) {
-    //    agc *= -1;
-        //phase+=sampRate/400;
-    //}
-
     for(int i = 0; i < numSamps; i++) {
         // AGC
         samps[i] *= agc;
@@ -85,12 +72,7 @@ void NBTVReceive::step(int16_t* samps, int numSamps, uint8_t* outFrame)
             }
         }
 
-        // Too lazy to do this another way
-        //if(samps[i] >= 0)
         pixVal += abs(samps[i]-16384);
-        //else
-        //    pixVal -= samps[i];
-
         if(ssamps >= mode.sampsPerPixel) {
             // Write the pixel to the frame
             pixVal /= mode.sampsPerPixel;
@@ -106,9 +88,6 @@ void NBTVReceive::step(int16_t* samps, int numSamps, uint8_t* outFrame)
                 line++;
                 imgIndex = (line*mode.pixels)+pixel;
             }
-            //line++;
-            //if(line == mode.lines)
-            //    line = 0;
         }
 
         // The frame is done, prepare for the next
@@ -137,5 +116,4 @@ void NBTVReceive::step(int16_t* samps, int numSamps, uint8_t* outFrame)
 void NBTVReceive::stop()
 {
     running = false;
-    //delete[] frame;
 }
