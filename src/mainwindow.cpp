@@ -157,7 +157,7 @@ void MainWindow::toggleTx()
         }
 
         mode.sampsPerPixel = sampleRate/(mode.lines*mode.pixels*mode.framerate);
-        transmitter.start(mode);
+        transmitter.start(mode, sampleRate);
         state = State::TX;
     }
     else { // We autostart RX when TX ends, as you likely want it if you're TXing
@@ -192,7 +192,7 @@ void MainWindow::toggleRx()
         }
 
         mode.sampsPerPixel = sampleRate/(mode.lines*mode.pixels*mode.framerate);
-        receiver.start(mode);
+        receiver.start(mode, sampleRate);
         state = State::RX;
     }
     else {

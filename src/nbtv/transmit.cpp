@@ -1,11 +1,16 @@
 #include "transmit.h"
 #include <cmath>
+#include <complex>
+#include "dsp/transform.h"
+#include <fftw3.h>
+#include <iostream>
 
-void NBTVTransmit::start(nbtvParam params)
+void NBTVTransmit::start(nbtvParam params, int sampRate)
 {
     mode = params;
     imageSize = params.lines*params.pixels;
     running = true;
+    this->sampRate = sampRate;
 }
 
 void NBTVTransmit::step(uint8_t* frame, int numSamps, int16_t* outSamps)
@@ -14,15 +19,18 @@ void NBTVTransmit::step(uint8_t* frame, int numSamps, int16_t* outSamps)
         return;
 
     // Generate one frame of samples
+    fftw_complex* xSamps = (fftw_complex*)fftw_malloc(numSamps*sizeof(fftw_complex));
     int pixel = 0;
     int imgIndex = 0;
     int samps = 0;
     for(int i = 0; i < numSamps; i++) {
-        outSamps[i] = INT16_MAX-(frame[imgIndex]*((INT16_MAX)/384));
-
+        xSamps[i][0] = INT16_MAX-(frame[imgIndex]*(INT16_MAX/255));
+        xSamps[i][1] = 0;
         if(pixel == mode.pixels-1) { // End of line
-            outSamps[i-1] = INT16_MAX;
-            outSamps[i] = INT16_MAX;
+            xSamps[i-1][0] = INT16_MAX;
+            xSamps[i-1][1] = 0;
+            xSamps[i][0] = INT16_MAX;
+            xSamps[i][1] = 0;
         }
 
         // Increment pixels
@@ -40,6 +48,23 @@ void NBTVTransmit::step(uint8_t* frame, int numSamps, int16_t* outSamps)
         }
         samps++;
     }
+
+    // Shift everything up 400Hz
+    dsp::hilbert(xSamps, numSamps);
+    int max = 0;
+    for(int i = 0; i < numSamps; i++) {
+        xSamps[i][0] = (xSamps[i][0] * cos(phase/((sampRate/400)/(M_PI*2)))) - (xSamps[i][1] * sin(phase/((sampRate/400)/(M_PI*2))));
+        if(xSamps[i][0] > max) max = xSamps[i][0];
+        phase++;
+    }
+
+    // Peak the audio level
+    for(int i = 0; i < numSamps; i++) {
+        xSamps[i][0] *= (INT16_MAX/max);
+        outSamps[i] = xSamps[i][0];
+    }
+
+    fftw_free(xSamps); // This will definitely cause issues (or not??)
 }
 
 void NBTVTransmit::stop() 

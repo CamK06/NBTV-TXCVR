@@ -15,13 +15,15 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOUIC_SEARCH_PATHS src/dialogs)
 
+find_package(PkgConfig REQUIRED)
+pkg_search_module(FFTW REQUIRED fftw3 IMPORTED_TARGET)
 find_package(SndFile REQUIRED)
 find_package(QT NAMES Qt5 COMPONENTS Widgets REQUIRED)
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 
-include_directories(src)
+include_directories(src PKGCONFIG::FFTW)
 
 file(GLOB SOURCES "src/*.cpp" "src/**/*.cpp")
 
 add_executable(nbtv ${SOURCES})
-target_link_libraries(nbtv PRIVATE SndFile::sndfile Qt5::Widgets stdc++fs portaudio)
+target_link_libraries(nbtv PRIVATE SndFile::sndfile Qt5::Widgets stdc++fs portaudio PkgConfig::FFTW)
