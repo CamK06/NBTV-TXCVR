@@ -5,7 +5,8 @@
 #define NUM_MODES 4
 
 enum Mode {
-    KCN,
+    KCNSSB,
+    KCNFM,
     TEKADE,
     BAIRD,
     NBTVA

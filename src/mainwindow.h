@@ -59,7 +59,7 @@ private:
     NBTVTransmit transmitter;
     NBTVReceive receiver;
     State state = IDLE;
-    nbtvParam mode = nbtvModes[Mode::KCN];
+    nbtvParam mode = nbtvModes[Mode::KCNSSB];
     std::thread worker;
     bool workerRunning = false;
     uint8_t* txFrameBuf = nullptr;

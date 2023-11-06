@@ -28,12 +28,11 @@ private:
     int ssamps = 0;
     int phase = 0;
     double pixVal = 0;
-    float diff = 0.0;
     float agc = 1.0;
     float agcAvg = 0.0;
     int agcMax = 0;
     int agcFrames = 0;
-    int agcDelay = 3; // Number of frames to sample
+    int agcDelay = 1; // Number of frames to sample
     int syncCount = 0;
     int noSyncCount = 0;
 

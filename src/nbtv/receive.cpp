@@ -22,7 +22,6 @@ void NBTVReceive::step(int16_t* samps, int numSamps, uint8_t* outFrame)
 
     // Shift 400Hz down to recover the baseband video
     fftw_complex* xSamps = (fftw_complex*)fftw_malloc(numSamps*sizeof(fftw_complex));
-    fftw_complex* fftSamps = (fftw_complex*)fftw_malloc(numSamps*sizeof(fftw_complex));
     for(int i = 0; i < numSamps; i++) {
         xSamps[i][0] = samps[i];
         xSamps[i][1] = 0;
@@ -30,7 +29,11 @@ void NBTVReceive::step(int16_t* samps, int numSamps, uint8_t* outFrame)
     dsp::hilbert(xSamps, numSamps);
     int max = 0;
     for(int i = 0; i < numSamps; i++) {
-        samps[i] = (xSamps[i][0] * cos(phase/((sampRate/400)/(M_PI*2)))) + ((xSamps[i][1]) * sin(phase/((sampRate/400)/(M_PI*2))));
+        // Extract the envelope
+        samps[i] = sqrt((xSamps[i][0]*xSamps[i][0])+(xSamps[i][1]*xSamps[i][1]));
+
+
+        //samps[i] = (xSamps[i][0] * cos(phase/((sampRate/400)/(M_PI*2)))) + ((xSamps[i][1]) * sin(phase/((sampRate/400)/(M_PI*2))));
         if(samps[i] > agcMax) agcMax = samps[i];
         phase++;
     }
@@ -76,7 +79,7 @@ void NBTVReceive::step(int16_t* samps, int numSamps, uint8_t* outFrame)
         if(ssamps >= mode.sampsPerPixel) {
             // Write the pixel to the frame
             pixVal /= mode.sampsPerPixel;
-            pixVal = ((pixVal/INT16_MAX)*255);
+            pixVal = 255-((pixVal/INT16_MAX)*255);
             outFrame[imgIndex] = pixVal;
 
             // Advance the beam
@@ -96,10 +99,10 @@ void NBTVReceive::step(int16_t* samps, int numSamps, uint8_t* outFrame)
             imgIndex = 0;
             pixel = 0;
             line = 0;
-            updateDisplay = true;
             agcFrames++;
             agcAvg += agcMax;
             agcAvg /= 2;
+            updateDisplay = true;
             if(agcFrames > agcDelay) {
                 agc = (INT16_MAX)/agcAvg;
                 agcAvg = 0;
@@ -109,7 +112,6 @@ void NBTVReceive::step(int16_t* samps, int numSamps, uint8_t* outFrame)
         }
         ssamps++;
     }
-
     outFrame = frame;
 }
 
